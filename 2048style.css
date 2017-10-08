@@ -44,19 +44,37 @@ body{
 	left: 0;
 	z-index: 100;
 }
-#rest:hover{
-	color: #003366;
-}
 #message:hover{
 	color: #003366;
 }
+#message{
+	position: fixed;
+	top: 40px;
+	right: 20px;
+}
+#rest:hover{
+	color: #003366;
+}
+
 #rest{
 	position: fixed;
 	top: 100px;
 	right: 20px;
 }
-#message{
+
+#testWin:hover{
+	color: #003366;
+}
+#testWin{
 	position: fixed;
-	top: 40px;
+	top: 160px;
+	right: 20px;
+}
+#testLose:hover{
+	color: #003366;
+}
+#testLose{
+	position: fixed;
+	top: 220px;
 	right: 20px;
 }

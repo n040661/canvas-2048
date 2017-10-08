@@ -1,7 +1,37 @@
 /**
+ *程序流程
+ *----------
+ *||
+ *||--绑定事件--||--键盘方向事件
+ *||           ||--图标事件：重启、信息、测试胜利和失败
+ *||
+ *||--胜利条件判断--||--winFlag--全局、随程序修改
+ *||			  
+ *||初始化--||--生成circlePoolArray        	 
+ *||       ||--绘制openningAnimation
+ *||	   ||--生成初始的两个数
+ *||	   ||--生成currentNumberArray
+ *||
+ *||键盘方向事件--||--判断方向
+ *||	        ||--判断游戏胜利还是失败
+ *||	        ||--如果winFlag=1,转置数组
+ *||	        ||--清空数组中的0
+ *||	        ||--每一行合并相邻且相同的项，并且合并之后的项不会再合并
+ *||	        ||--给数组的每一行unshift若干个0至长度为四
+ *||	        ||--通过转置还原数组，获得按下键盘方向键之后应该的数组nextNumberArray
+ *||	        ||--比对nextNumberArray和currentNumberArray，获取整个十六宫格有变动的区域positon数组
+ *||	        ||--通过position,获取该区域内数字转换成像素点的数组：需要移动的圆的数组，以及目标位置圆数组
+ *||	        ||--将这两个数组传入动画函数，进行动画绘制
+ *||	        ||--动画完毕之后，刷新数据。
+ *||
+ *||测试胜利失败、信息动画--||在数组动画执行的时候禁用
+ */ 
+
+
+/**
  * 前一帧数字数组
  * @type {Array}
- */
+ */ 
 var currentNumberArray = [];
 /**
  * 数字数组
@@ -796,11 +826,15 @@ function animationWhenPress(circlesNeedToMove,circlesFinalPosition,circlesKeepSt
 			}else if(winFlag === 100){
 				keydownFlag = 1;
 				clearInterval(addNumber);
-				winAnimation(0);
+				setTimeout(function(){
+					winAnimation(0);
+				},500);
 			}else{
 				keydownFlag = 1;
 				clearInterval(addNumber);
-				winAnimation(1);
+				setTimeout(function(){
+					winAnimation(1);
+				},500);
 			}
 			if(addNumberFlag > times){
 				keydownFlag = 1;
@@ -827,13 +861,15 @@ function keyDown(event){
 		winFlag = winCondition(currentNumberArray);
 		if(winFlag === 100){
 			keydownFlag = 1;
-			winAnimation(0);
-
+			setTimeout(function(){
+				winAnimation(0);
+			},500);
 			return 0;
 		}else if(winFlag === 0){
 			keydownFlag = 1;
-			winAnimation(1);
-
+			setTimeout(function(){
+				winAnimation(1);
+			},500);
 			return 0;
 		}
 		//复原标志
@@ -1021,7 +1057,7 @@ function gameBoardInitAnimation(){
 /**
  * 初始化游戏界面
  */
-function initGameBoard(){
+function initGameBoard(test){
 	var h = document.body.offsetHeight;
 	var w = document.body.offsetWidth;
 	if(h < 0){
@@ -1037,11 +1073,16 @@ function initGameBoard(){
 	var canvas = document.getElementById("board");
 	var context = canvas.getContext("2d"); 
 	var boardArray = [];
-	var temp;
-	for(i = 0; i < 4; i++){
-		boardArray.push([0,0,0,0]);
-	}
-	// boardArray = [[2,4,8,16],[4,8,16,32],[8,16,32,64],[64,1024,1024,0]];
+	var temp;	
+	if(test === 0){
+		boardArray = [[1024,1024,0,0],[1024,0,0,0],[0,0,0,0],[0,0,0,0]];
+	}else if(test === 1){
+		boardArray = [[2,4,8,16],[32,64,128,256],[512,1024,2,4],[8,16,32,0]];
+	}else{
+		for(i = 0; i < 4; i++){
+			boardArray.push([0,0,0,0]);
+		}	
+	}	
 	boardArray = createNumber(boardArray);
 	boardArray = createNumber(boardArray);
 	drawArrayIntoNumber(boardArray);
@@ -1064,6 +1105,7 @@ function initGameBoard(){
 			clearInterval(showCell);
 		}
 	},100);
+	winFlag = 1;
 	setTimeout(function(){
 		keydownFlag = 1;
 	},2500);
@@ -1106,8 +1148,6 @@ function openningAnimation(){
 	var arr2 = initCircleArray("wanna,");
 	var arr3 = initCircleArray("make it");
 	var arr4 = initCircleArray("happen!");
-
-
 	nextCircleArray = arr1;
 	gameBoardInitAnimation();
 	setTimeout(function(){
@@ -1121,7 +1161,11 @@ function openningAnimation(){
 	setTimeout(function(){
 		nextCircleArray = arr4;
 		gameBoardInitAnimation();
-	}, 5600);
+	}, 5800);
+	setTimeout(function(){
+		nextCircleArray = [];
+		gameBoardInitAnimation();
+	}, 8500);
 }
 /**
  * 胜利/失败 动画
@@ -1147,6 +1191,7 @@ function winAnimation(win){
 		anotherFlag++;
 		if(anotherFlag > 50){
 			circlePoolArray = circlePoolArray.concat(tempPoolArray.slice(0));
+			circleArray.length = 0;
 			if(win === 0){
 				var arr = initCircleArray("congratulations");
 				nextCircleArray.length = 0;
@@ -1181,7 +1226,7 @@ function addRestEvent(event){
 			setTimeout(function(){
 				initGameBoard();
 				onKeydown(event);
-			},8000);
+			},9500);
 		}		
 	});
 }
@@ -1191,10 +1236,10 @@ function addRestEvent(event){
 function addMessageEvent(event){
 	var messageButton = document.getElementById("message");
 	var cell = document.getElementsByClassName("cellDiv");
-	var a = 0;
 	eventUtil.addHandler(messageButton,"click",function(){
 		if(keydownFlag === 1){
 			keydownFlag = 0;
+			var a = 0;
 			for(i = 0; i < cell.length; i++){
 				cell[i].style.visibility = "hidden";
 			}
@@ -1210,13 +1255,15 @@ function addMessageEvent(event){
 			setTimeout(function(){
 				nextCircleArray = temp;
 				gameBoardInitAnimation();
-				var showCell = setInterval(function(){
-					cell[a].style.visibility = "visible";
-					a++;
-					if(a >= cell.length){
-						clearInterval(showCell);
-					}
-				},100);	
+				if(winFlag == 1){
+					var showCell = setInterval(function(){
+						cell[a].style.visibility = "visible";
+						a++;
+						if(a >= cell.length){
+							clearInterval(showCell);
+						}
+					},100);	
+				}
 			},4000);
 			setTimeout(function(){
 				keydownFlag = 1;
@@ -1225,20 +1272,44 @@ function addMessageEvent(event){
 		}
 	});
 }
+/**
+ * 胜利测试
+ */
+function testWin(){
+	var testWinButton = document.getElementById("testWin");
+	eventUtil.addHandler(testWinButton,"click",function(){
+		if(keydownFlag === 1){
+			openningAnimation();
+			setTimeout(function(){
+				initGameBoard(0);
+				onKeydown(event);
+			},9500);
+		}
+	});
+}
+/**
+ * 失败测试
+ */
+function testLose(){
+	var testLoseButton = document.getElementById("testLose");
+	eventUtil.addHandler(testLoseButton,"click",function(){
+		if(keydownFlag === 1){
+			openningAnimation();
+			setTimeout(function(){
+				initGameBoard(1);
+				onKeydown(event);
+			},9500);
+		}
+	});
+}
 window.onload = function(){
 	addRestEvent(event);
 	addMessageEvent(event);
+	testWin();
+	testLose();
 	openningAnimation();
 	setTimeout(function(){
 		initGameBoard();
 		onKeydown(event);
-	},8000);	
+	},9500);	
 };
-
-
-
-
-
-
-
-
