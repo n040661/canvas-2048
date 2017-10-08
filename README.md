@@ -8,7 +8,7 @@ https://wengzs.github.io/canvas-2048/new2048.html
 静态：
 ![Image text](https://github.com/wengzs/canvas-2048/blob/master/information/gaming.jpeg)
 ![Image text](https://github.com/wengzs/canvas-2048/blob/master/information/start.png)
-##思路
+## 思路
 #### 前置技能要求
 js高程canvas部分得看完，看完基本也就会了。<br />
 这里只提供一些思路以供萌新参考。如果真想照着我的来一遍练手，代码注释我写的很清楚了，同学们可以慢慢看。<br />
