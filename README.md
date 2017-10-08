@@ -3,4 +3,4 @@
 ## demo预览地址
 https://wengzs.github.io/canvas-2048/new2048.html
 ## 效果预览
-https://github.com/wengzs/canvas-2048/blob/master/information/start.gif
+![Image text](https://github.com/wengzs/canvas-2048/blob/master/information/start.gif)
